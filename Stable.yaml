@@ -936,7 +936,7 @@ triggers:
     id: custom
 variables:
   input_camera: !input camera
-  input_camera_name: "{{input_camera|expand|map(attribute='attributes.camera_name', default='none')|list}}"
+  input_camera_name: "{{ ( (input_camera if (input_camera is iterable and input_camera is not string) else [input_camera]) | map('string') | map('trim') | map('lower') | map('regex_replace','^camera\.','') | map('regex_replace','[._\s]+','') | map('regex_replace','\d+$','') | list ) }}"
   camera: "{{trigger.payload_json['after']['camera'] if trigger.id == 'frigate-event'}}"
   camera_name: "{{ camera | replace('_', ' ') | lower }}"
   input_severity: !input review_severity
